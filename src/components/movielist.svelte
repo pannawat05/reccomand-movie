@@ -18,8 +18,8 @@
   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
     {#each movies as movie}
       <div>
-        <img src={"https://image.tmdb.org/t/p/w200" + movie.poster_path} alt={movie.title} />
-        <p>{movie.title}</p>
+        <img src={"https://image.tmdb.org/t/p/w200" + movie.poster_path} alt={movie.title} class="rounded   shadow-lg" />
+        <p class="font-bold text-red-400 underline">{movie.title}</p>
       </div>
     {/each}
   </div>
