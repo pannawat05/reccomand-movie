@@ -1,5 +1,8 @@
 <script>
+  import { Modal, Trigger, Content } from 'sv-popup';
+
   let movies = [];
+  let creditsByMovie = new Map();
   let selectedTrailerUrl = null;
 
   const apiKey = '8f1aed9577242f589e9228998ae9be49';
@@ -9,6 +12,16 @@
     const data = await res.json();
     movies = data.results;
   };
+
+  const fetchCredits = async (movieId) => {
+  if (!creditsByMovie.has(movieId)) {
+    const res = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${apiKey}`);
+    const data = await res.json();
+    creditsByMovie.set(movieId, data.cast.slice(0, 5));
+    creditsByMovie = new Map(creditsByMovie);  // << เพิ่มบรรทัดนี้
+  }
+};
+
 
   const fetchTrailerUrl = async (movieId) => {
     const res = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${apiKey}`);
@@ -43,32 +56,63 @@
     align-items: center;
     justify-content: center;
   }
-  .trigger:hover{
+  .trigger:hover {
     cursor: pointer;
   }
-
 </style>
 
 <h1>🎬 หนังยอดนิยม</h1>
 
 {#if movies.length > 0}
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1.5fr)); gap: 1rem;">
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
     {#each movies as movie}
-      <div class=" shadow-lg bg-white p-1 rounded-md">
-        <img src={"https://image.tmdb.org/t/p/w200" + movie.poster_path} alt={movie.title} class="rounded w-39 h-45 ms-1 mt-1 mb-1" />
-        <p class="font-bold text-red-400 underline">{movie.title}</p>
-        <button on:click={() => openTrailer(movie.id)} class=" trigger rounded-lg bg-black shadow text-white font-bold w-40 h-8 text-center">
+      <div class="shadow-lg bg-white p-2 rounded-md items-center flex flex-col">
+        <img src={"https://image.tmdb.org/t/p/w200" + movie.poster_path} alt={movie.title} class="rounded w-39 h-45 mt-1 mb-1" />
+
+        <Modal basic>
+          <Trigger>
+            <button
+              type="button"
+              class="font-bold text-red-400 underline text-center bg-transparent border-none p-0 m-0 cursor-pointer"
+              on:click={() => fetchCredits(movie.id)}
+              style="background: none; border: none;"
+            >
+              {movie.title}
+            </button>
+          </Trigger>
+
+          <Content>
+            <img src={"https://image.tmdb.org/t/p/w200" + movie.poster_path} alt={movie.title} class="rounded w-39 h-45 mb-2 mx-auto" />
+            <h2 class="text-lg font-bold text-center">{movie.title}</h2>
+            <p><b>Overview:</b><br>{movie.overview}</p>
+            <p class="text-sm text-gray-500">Release Date: {movie.release_date}</p>
+            <p class="text-sm text-gray-500">Rating: {movie.vote_average}</p>
+            <p class="text-sm text-gray-500">Popularity: {movie.popularity}</p>
+
+            <h3 class="font-semibold mt-3">นักแสดงนำ:</h3>
+            {#if creditsByMovie.has(movie.id)}
+              {#each creditsByMovie.get(movie.id) as credit}
+                <p class="text-sm text-gray-700">👤 {credit.name} รับบท {credit.character}</p>
+              {/each}
+            {:else}
+              <p class="text-sm text-gray-500">⏳ กำลังโหลดนักแสดง...</p>
+            {/if}
+          </Content>
+        </Modal>
+
+        <button on:click={() => openTrailer(movie.id)} class="trigger rounded-lg bg-black shadow text-white font-bold w-30 h-8 text-center mt-3 mb-2">
           <i class="fa-solid fa-film"></i> Teaser
         </button>
-        <div class="detail mt-5 text-center">
-        <p>{movie.release_date}</p>
-        <p><i class="fa-brands fa-imdb"></i>{movie.vote_average}</p>
+
+        <div class="detail mt-2 text-center text-sm">
+          <p>{movie.release_date}</p>
+          <p><i class="fa-brands fa-imdb"></i> {movie.vote_average}</p>
         </div>
       </div>
     {/each}
   </div>
 {:else}
-  <p>กำลังโหลด...</p>
+  <p>⏳ กำลังโหลดข้อมูลหนัง...</p>
 {/if}
 
 {#if selectedTrailerUrl}
