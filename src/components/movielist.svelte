@@ -1,9 +1,25 @@
 <script>
   import { Modal, Trigger, Content } from 'sv-popup';
+  import { watchlist } from '../stores/watchlistStore.js';
+  import { get } from 'svelte/store';
+  import { onMount } from 'svelte';
 
   let movies = [];
   let creditsByMovie = new Map();
   let selectedTrailerUrl = null;
+
+  function toggleWatch(id) {
+    watchlist.toggle(id);
+    window.location.reload()
+    alert("movie added to watchlist")
+  }
+
+  function isInWatchlist(id) {
+    return get(watchlist).includes(id);
+  }
+
+ 
+ 
 
   const apiKey = '8f1aed9577242f589e9228998ae9be49';
 
@@ -14,14 +30,14 @@
   };
 
   const fetchCredits = async (movieId) => {
-  if (!creditsByMovie.has(movieId)) {
-    const res = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${apiKey}`);
-    const data = await res.json();
-    creditsByMovie.set(movieId, data.cast.slice(0, 5));
-    creditsByMovie = new Map(creditsByMovie);  // << เพิ่มบรรทัดนี้
-  }
-};
+    if (!creditsByMovie.has(movieId)) {
+      const res = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${apiKey}`);
+      const data = await res.json();
+      creditsByMovie.set(movieId, data.cast.slice(0, 5));
+      creditsByMovie = new Map(creditsByMovie); // trigger reactivity
 
+    }
+  };
 
   const fetchTrailerUrl = async (movieId) => {
     const res = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${apiKey}`);
@@ -97,6 +113,15 @@
             {:else}
               <p class="text-sm text-gray-500">⏳ กำลังโหลดนักแสดง...</p>
             {/if}
+
+            <button
+              class={`px-2 py-1 rounded text-white font-bold mt-2 ${
+                isInWatchlist(movie.id) ? 'bg-green-600' : 'bg-gray-600'
+              }`}
+              on:click={() => toggleWatch(movie.id)}
+            >
+              {isInWatchlist(movie.id) ? '✔ In Watchlist' : '+ Add to Watchlist'}
+            </button>
           </Content>
         </Modal>
 
