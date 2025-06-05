@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { watchlist } from '../../stores/watchlistStore.js';
   import { get } from 'svelte/store';
+   import Nav from '../../components/Nav.svelte';
 
   let movies = [];
   const apiKey = '8f1aed9577242f589e9228998ae9be49';
@@ -33,7 +34,7 @@
     });
   }
 </script>
-
+<Nav />
 <h1>🎬 Watchlist ของคุณ</h1>
 
 {#if movies.length > 0}

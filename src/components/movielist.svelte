@@ -9,9 +9,17 @@
   let selectedTrailerUrl = null;
 
   function toggleWatch(id) {
-    watchlist.toggle(id);
-    window.location.reload()
-    alert("movie added to watchlist")
+
+    var a = confirm(" add this movie  to watchlist?");
+    if (!a) {
+      return;
+    }
+    else{
+    alert("Movie added to watchlist");
+     watchlist.toggle(id);
+    window.location='/watchlist';
+    }
+    
   }
 
   function isInWatchlist(id) {

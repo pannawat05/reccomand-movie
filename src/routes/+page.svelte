@@ -1,6 +1,9 @@
 <script>
     import Movielist from '../components/movielist.svelte';
+     import Nav from '../components/Nav.svelte';
+
 </script>
+<Nav />
 <div class="content">
 <Movielist />
 </div>
