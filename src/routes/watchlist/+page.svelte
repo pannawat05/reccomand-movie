@@ -3,9 +3,12 @@
   import { watchlist } from '../../stores/watchlistStore.js';
   import { get } from 'svelte/store';
    import Nav from '../../components/Nav.svelte';
+     import dotenv from 'dotenv';
+
+dotenv.config();
 
   let movies = [];
-  const apiKey = '8f1aed9577242f589e9228998ae9be49';
+  const apiKey = process.env.API_KEY; // Replace with your actual API key
 
   // ดึงหนังจาก watchlist เมื่อ component ถูก mount
   async function loadMovies() {
