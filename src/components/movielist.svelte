@@ -32,7 +32,7 @@ dotenv.config();
  
  
 
-  const apiKey = process.env.API_KEY || '8f1aed9577242f589e9228998ae9be49'; // Replace with your actual API key
+  const apiKey = process.env.API_KEY; // Replace with your actual API key
 
   const fetchMovies = async () => {
     const res = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=en-US&page=1`);
