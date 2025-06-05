@@ -3,6 +3,9 @@
   import { watchlist } from '../stores/watchlistStore.js';
   import { get } from 'svelte/store';
   import { onMount } from 'svelte';
+  import dotenv from 'dotenv';
+
+dotenv.config();
 
   let movies = [];
   let creditsByMovie = new Map();
@@ -29,7 +32,7 @@
  
  
 
-  const apiKey = '8f1aed9577242f589e9228998ae9be49';
+  const apiKey = process.env.API_KEY || '8f1aed9577242f589e9228998ae9be49'; // Replace with your actual API key
 
   const fetchMovies = async () => {
     const res = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=en-US&page=1`);
